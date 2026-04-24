@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>午餐簿 · 捷徑設定教學</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700&family=Noto+Serif+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+
+  :root {
+    --bg: #f5efe6;
+    --bg-card: #fbf6ec;
+    --ink: #2a2520;
+    --ink-soft: #6b5d4f;
+    --ink-faint: #b0a28e;
+    --accent: #b8542e;
+    --line: #d9ccb0;
+    --blue: #4a6d8a;
+    --green: #5e7a4a;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Serif TC', 'Fraunces', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.8;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0.16 0 0 0 0 0.14 0 0 0 0 0.12 0 0 0 0.03 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.5;
+    z-index: 1;
+    mix-blend-mode: multiply;
+  }
+
+  .page {
+    position: relative;
+    z-index: 2;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 42px;
+    letter-spacing: -0.02em;
+    margin: 0 0 4px;
+    line-height: 1;
+  }
+
+  h1 .zh {
+    display: block;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 18px;
+    color: var(--ink-soft);
+    letter-spacing: 0.15em;
+    margin-top: 10px;
+    font-weight: 500;
+  }
+
+  .subtitle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin-top: 14px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 36px;
+  }
+
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 26px;
+    font-weight: 600;
+    margin: 48px 0 8px;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+
+  h2 .step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    font-weight: 400;
+    padding: 4px 10px;
+    border: 1px solid var(--accent);
+    vertical-align: middle;
+  }
+
+  h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 28px 0 10px;
+    color: var(--ink);
+  }
+
+  p { margin: 0 0 14px; color: var(--ink); }
+
+  .lead {
+    font-size: 17px;
+    color: var(--ink-soft);
+    margin-bottom: 20px;
+  }
+
+  ol, ul {
+    margin: 12px 0 18px;
+    padding-left: 24px;
+  }
+
+  ol li, ul li {
+    margin-bottom: 10px;
+    padding-left: 6px;
+  }
+
+  ol li::marker {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: var(--bg-card);
+    padding: 2px 7px;
+    border: 1px solid var(--line);
+    color: var(--accent);
+  }
+
+  .callout {
+    background: var(--bg-card);
+    border-left: 3px solid var(--blue);
+    padding: 16px 18px;
+    margin: 20px 0;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+
+  .callout.warn {
+    border-left-color: var(--accent);
+  }
+
+  .callout.success {
+    border-left-color: var(--green);
+  }
+
+  .callout .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .step-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    padding: 20px 22px;
+    margin: 16px 0;
+    position: relative;
+  }
+
+  .step-card::before {
+    content: "";
+    position: absolute;
+    top: -1px; left: 16px; right: 16px;
+    height: 3px;
+    background: repeating-linear-gradient(90deg, var(--accent) 0 5px, transparent 5px 10px);
+    opacity: 0.3;
+  }
+
+  .key-action {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    position: relative;
+  }
+
+  .key-action::before {
+    content: "";
+    position: absolute;
+    inset: 3px;
+    border: 1px solid rgba(251, 246, 236, 0.2);
+  }
+
+  .key-action strong {
+    color: #f4c9a8;
+    font-weight: 600;
+  }
+
+  .action-chain {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-size: 14px;
+  }
+
+  .action-chain .chain-item {
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+
+  .action-chain .chain-item:last-child {
+    border-bottom: none;
+  }
+
+  .action-chain .chain-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    margin-right: 10px;
+    letter-spacing: 0.1em;
+  }
+
+  .action-chain .chain-action {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .action-chain .chain-detail {
+    display: block;
+    color: var(--ink-soft);
+    font-size: 13px;
+    margin-top: 3px;
+    padding-left: 32px;
+    line-height: 1.5;
+  }
+
+  .tip {
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+
+  .url-box {
+    background: var(--ink);
+    color: #f4c9a8;
+    padding: 12px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    margin: 12px 0;
+    word-break: break-all;
+    line-height: 1.5;
+  }
+
+  .url-box .var {
+    color: #88c9a1;
+    font-style: italic;
+  }
+
+  .divider {
+    text-align: center;
+    margin: 50px 0 30px;
+    color: var(--line);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    letter-spacing: 0.5em;
+    font-size: 14px;
+  }
+
+  .intro-box {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    padding: 24px 26px;
+    margin-bottom: 36px;
+    position: relative;
+  }
+
+  .intro-box::before {
+    content: "";
+    position: absolute;
+    top: -1px; left: 20px; right: 20px;
+    height: 3px;
+    background: repeating-linear-gradient(90deg, var(--accent) 0 6px, transparent 6px 12px);
+    opacity: 0.3;
+  }
+
+  .intro-box h3 {
+    margin-top: 0;
+  }
+
+  .checklist {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0;
+  }
+
+  .checklist li {
+    padding: 6px 0 6px 28px;
+    position: relative;
+  }
+
+  .checklist li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: var(--green);
+    font-weight: 700;
+  }
+
+  .ornament {
+    text-align: center;
+    padding: 30px 0;
+    color: var(--line);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    letter-spacing: 0.4em;
+    font-size: 12px;
+  }
+
+  strong {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    margin: 14px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 400;
+  }
+
+  td code {
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>
+  Shortcuts Setup
+  <span class="zh">午餐簿 · 捷徑設定教學</span>
+</h1>
+<div class="subtitle">Auto Reminder at Lunch Time · 中午自動跳出來提醒你記錄</div>
+
+<div class="intro-box">
+  <h3>這份教學會帶你完成三件事</h3>
+  <ul class="checklist">
+    <li>把「午餐簿」網頁加到 iPhone 主畫面</li>
+    <li>建立一個捷徑，能抓你當下的 GPS 位置並開啟午餐簿</li>
+    <li>設定自動化，每天中午 13:00 自動提醒你記錄</li>
+  </ul>
+  <p class="tip">預計 10 分鐘內完成。完全不用寫程式。</p>
+</div>
+
+<h2><span class="step-num">STEP 01</span>把網頁加到主畫面</h2>
+
+<p>先確定你有把 <code>lunch.html</code> 放在能用瀏覽器開啟的地方。最簡單的幾種方式：</p>
+
+<ul>
+  <li><strong>iCloud Drive</strong>：把檔案傳上去，用 iPhone 的「檔案」App 找到它，長按後選「分享」→「透過 Safari 開啟」</li>
+  <li><strong>GitHub Pages 或 Netlify Drop</strong>：免費託管靜態網頁，會得到一個網址</li>
+  <li><strong>自己的 NAS 或電腦</strong>：放到同個 Wi-Fi 下可存取的位置</li>
+</ul>
+
+<div class="callout warn">
+  <span class="label">重要</span>
+  <strong>記下這個網址</strong>，等下捷徑要用。網址應該長得像 <code>https://你的網域/lunch.html</code> 這樣。
+</div>
+
+<h3>加到主畫面</h3>
+<ol>
+  <li>用 <strong>Safari</strong>（不是 Chrome，一定要 Safari）打開你的網址</li>
+  <li>點下方中間的「分享」按鈕（方框往上箭頭的那個）</li>
+  <li>往下滑，選「<strong>加入主畫面</strong>」</li>
+  <li>取個名字，例如「午餐簿」，按「加入」</li>
+</ol>
+
+<p>完成後主畫面就會多一個午餐簿圖示，點開會全螢幕顯示。</p>
+
+<div class="divider">· · ·</div>
+
+<h2><span class="step-num">STEP 02</span>建立「記錄午餐」捷徑</h2>
+
+<p class="lead">這個捷徑會抓你的位置、開啟網頁，並把位置傳過去讓它自動搜尋附近餐廳。</p>
+
+<div class="step-card">
+  <h3>建立新捷徑</h3>
+  <ol>
+    <li>打開 iPhone 內建的「<strong>捷徑</strong>」App</li>
+    <li>點右上角「<strong>+</strong>」建立新捷徑</li>
+    <li>點上方捷徑名稱，命名為「<strong>記錄午餐</strong>」，可以選一個喜歡的顏色和圖示</li>
+  </ol>
+</div>
+
+<div class="step-card">
+  <h3>加入以下動作（按順序）</h3>
+
+  <div class="action-chain">
+    <div class="chain-item">
+      <span class="chain-num">01</span>
+      <span class="chain-action">取得目前位置</span>
+      <span class="chain-detail">搜尋「目前位置」加入。這會取得你當下的 GPS 座標。</span>
+    </div>
+    <div class="chain-item">
+      <span class="chain-num">02</span>
+      <span class="chain-action">取得位置的詳細資訊（取兩次）</span>
+      <span class="chain-detail">
+        <strong>第一次：</strong>搜尋「取得位置詳細資訊」加入，選取項目選「<strong>緯度</strong>」，輸入來源是上一步的「目前位置」<br>
+        <strong>第二次：</strong>再加一個相同動作，選取項目改選「<strong>經度</strong>」，來源一樣是「目前位置」
+      </span>
+    </div>
+    <div class="chain-item">
+      <span class="chain-num">03</span>
+      <span class="chain-action">URL</span>
+      <span class="chain-detail">
+        搜尋「URL」加入，在文字框輸入：
+        <div class="url-box">
+          https://<span class="var">你的網域</span>/lunch.html?lat=<span class="var">[插入緯度變數]</span>&amp;lon=<span class="var">[插入經度變數]</span>
+        </div>
+        其中 <code>[插入緯度變數]</code> 和 <code>[插入經度變數]</code> 是要點選插入的魔術變數（會是藍色膠囊狀）。
+      </span>
+    </div>
+    <div class="chain-item">
+      <span class="chain-num">04</span>
+      <span class="chain-action">打開 URL</span>
+      <span class="chain-detail">搜尋「打開 URL」加入，它會自動把上一步的 URL 當作輸入。</span>
+    </div>
+  </div>
+</div>
+
+<div class="callout">
+  <span class="label">運作原理</span>
+  網頁在網址加上 <code>?lat=...&lon=...</code> 後，會自動讀取這組座標並搜尋附近餐廳。不用你手動按「搜尋」按鈕。
+</div>
+
+<h3>測試一下</h3>
+<p>捷徑建立好後，點右上角「<strong>▶ 執行</strong>」測試。</p>
+<ul>
+  <li>第一次會要求「允許取得位置」→ 選「<strong>允許一次</strong>」或「<strong>在使用 App 時允許</strong>」</li>
+  <li>會要求「允許打開 Safari」→ 允許</li>
+  <li>如果網頁跳出來並且自動列出附近餐廳 → <strong>成功了</strong></li>
+</ul>
+
+<div class="divider">· · ·</div>
+
+<h2><span class="step-num">STEP 03</span>設定每天自動提醒</h2>
+
+<p class="lead">讓 iPhone 在每天中午自動跳通知，點了直接開啟記錄畫面。</p>
+
+<div class="step-card">
+  <h3>建立自動化</h3>
+  <ol>
+    <li>在捷徑 App 中，點下方「<strong>自動化</strong>」分頁</li>
+    <li>點右上角「<strong>+</strong>」→「<strong>建立個人自動化</strong>」（如果是第一次建立，直接點「新增自動化」）</li>
+    <li>選擇「<strong>特定時間</strong>」</li>
+    <li>時間設成「<strong>13:00</strong>」（或你平常吃飯完的時間，例如 13:15）</li>
+    <li>下方選「<strong>每天</strong>」</li>
+    <li>點「下一步」</li>
+  </ol>
+</div>
+
+<div class="step-card">
+  <h3>選擇要執行的動作</h3>
+  <ol>
+    <li>搜尋並選「<strong>顯示通知</strong>」</li>
+    <li>通知內容輸入：<code>今天吃了什麼?</code></li>
+    <li>再加一個動作「<strong>執行捷徑</strong>」，選剛剛建立的「記錄午餐」</li>
+    <li>點「下一步」</li>
+    <li><strong>把「執行前先詢問」關掉</strong>（這樣才會自動執行，不然每次都要你確認）</li>
+    <li>把「執行時通知」打開（你想收到提醒的話）</li>
+    <li>點「完成」</li>
+  </ol>
+</div>
+
+<div class="callout success">
+  <span class="label">完成</span>
+  從現在起，<strong>每天 13:00 iPhone 會自動跳通知提醒你</strong>，點下去會直接開啟午餐簿並顯示附近餐廳選項。
+</div>
+
+<div class="divider">· · ·</div>
+
+<h2><span class="step-num">STEP 04</span>進階技巧</h2>
+
+<h3>放到主畫面的快捷位置</h3>
+<p>既然你提到想放在載具 QR Code 那一欄（今日顯示／小工具區），這裡有幾種做法：</p>
+
+<ul>
+  <li><strong>捷徑小工具</strong>：長按主畫面空白處 → 左上角「+」→ 搜尋「捷徑」→ 選一個大小加入，然後長按小工具設定要執行哪個捷徑，選「記錄午餐」。這樣從主畫面往右滑（今日顯示那一頁）就能看到並一鍵執行</li>
+  <li><strong>搭配 Widgetsmith 等第三方 App</strong>：可以做出更美觀的小工具樣式</li>
+  <li><strong>鎖定畫面捷徑</strong>：iOS 16 以上，可以把捷徑設成鎖定畫面上的小工具，不用解鎖就能按</li>
+</ul>
+
+<h3>兩階段自動化（更貼心的版本）</h3>
+<p>如果想更接近你原本想要的「偵測停留最久的位置」，可以做這樣的設計：</p>
+
+<ol>
+  <li><strong>12:00 的自動化</strong>：靜默記錄當下位置到備忘錄（當作「中午位置」）</li>
+  <li><strong>13:00 的自動化</strong>：讀取剛才記下的位置，打開網頁搜尋該位置附近餐廳</li>
+</ol>
+
+<p>這樣即使 13:00 時你已經回到辦公室，還是能搜尋到 12:00 時你實際吃飯的位置附近餐廳。實作上會稍微複雜，如果需要我可以另外寫一份教學。</p>
+
+<h3>如果自動化沒有觸發</h3>
+<ul>
+  <li>iOS 的時間自動化<strong>必須 iPhone 是解鎖或正在使用狀態</strong>才會自動執行，螢幕全黑睡眠時不會觸發</li>
+  <li>改善方法：把自動化觸發時間設成你通常會看手機的時間，或打開「執行時通知」這樣會有提示音</li>
+  <li>確認「設定 → 捷徑 → 允許執行捷徑」是開啟的</li>
+</ul>
+
+<div class="divider">· · ·</div>
+
+<h2><span class="step-num">FAQ</span>常見問題</h2>
+
+<h3>為什麼點通知後網頁沒有自動搜尋附近餐廳？</h3>
+<p>可能原因：</p>
+<ul>
+  <li>URL 中的 <code>lat=</code> 和 <code>lon=</code> 參數沒有正確代入，回到捷徑檢查第 3 步的變數有沒有變成藍色膠囊狀</li>
+  <li>位置權限被拒絕，到「設定 → 隱私權 → 定位服務 → Safari 網站」檢查</li>
+</ul>
+
+<h3>可以改成 12:30 執行嗎？</h3>
+<p>當然可以，自動化的時間想設幾點都行。</p>
+
+<h3>每天都要手動按「執行」嗎？</h3>
+<p>不用。只要 Step 03 最後把「執行前先詢問」關掉，它就會每天自動執行。第一次會跳確認，允許一次後就永遠自動了。</p>
+
+<h3>出國或休假怎麼辦？</h3>
+<p>可以暫時關掉自動化：捷徑 App → 自動化 → 點該自動化 → 把「啟用此自動化」關掉。回國再打開。</p>
+
+<div class="ornament">· 完 ·</div>
+
+</div>
+</body>
+</html>
