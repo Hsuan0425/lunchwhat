@@ -756,10 +756,10 @@
 <script>
   // ── Google Sheets 同步設定 ──────────────────────────
   // 完成 Apps Script 部署後，把網址貼在這裡（引號內）
-  const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwxbfD1qLWDcWE7N5oKM1ju5NRf13o1xAq8Bss_iswoocX5RKx5d4aqpP8xUxpoBPTyHA/exec';
+  const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyio5nC5AmshSYi-lgeqzH_FmkZacwukS6SJP7qtjH9eLuh3Dfsw5-vAAqLMsfKI98r/exec';
   // ────────────────────────────────────────────────────
 
-  async function syncToSheets(action, record) {
+  function syncToSheets(action, record) {
     if (!SHEETS_URL) return;
     try {
       const params = new URLSearchParams({
@@ -769,7 +769,8 @@
         time:   record.time || '',
         shop:   record.shop || '',
       });
-      await fetch(SHEETS_URL, { method: 'POST', mode: 'no-cors', body: params });
+      // 用 GET + no-cors，避免 POST redirect 問題
+      fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
     } catch (e) { /* 本地資料優先，同步失敗靜默處理 */ }
   }
 
