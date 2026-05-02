@@ -715,6 +715,9 @@
   </div>
   <div id="history-list"></div>
   <div class="footer-link" id="footer-link"></div>
+  <div style="text-align:center; padding: 0 0 20px;">
+    <button onclick="syncFromSheets(true)" style="background:none; border:1px solid var(--line); color:var(--ink-faint); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.15em; padding:6px 14px; cursor:pointer;">☁ 從雲端同步</button>
+  </div>
 
 </div>
 
@@ -786,6 +789,41 @@
 
   function saveData() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  // ── 從 Google Sheets 讀取資料（換裝置時還原）──
+  async function syncFromSheets(manual) {
+    if (!SHEETS_URL) return;
+    if (manual) showToast('☁ 同步中...');
+    try {
+      const resp = await fetch(SHEETS_URL + '?action=getAll', { method: 'GET' });
+      if (!resp.ok) return;
+      const data = await resp.json();
+      if (!data.ok || !Array.isArray(data.records) || data.records.length === 0) return;
+
+      const localIds = new Set(state.records.map(r => r.id));
+      let changed = false;
+      data.records.forEach(r => {
+        if (!localIds.has(r.id) && r.shop) {
+          state.records.push({ id: r.id, date: r.date, time: r.time || '', shop: r.shop, createdAt: Date.now() });
+          changed = true;
+        }
+      });
+
+      if (changed) {
+        state.records.sort((a, b) => {
+          const dc = a.date.localeCompare(b.date);
+          return dc !== 0 ? dc : (a.time || '').localeCompare(b.time || '');
+        });
+        saveData();
+        renderAll();
+        showToast('☁ 已從雲端還原 ' + data.records.length + ' 筆');
+      } else if (manual) {
+        showToast('☁ 已是最新，無需更新');
+      }
+    } catch (e) {
+      if (manual) showToast('☁ 同步失敗，請檢查網路');
+    }
   }
 
   let state = loadData();
@@ -1260,6 +1298,9 @@
   });
 
   renderAll();
+
+  // 啟動時自動從 Sheets 同步（背景執行，不打擾使用者）
+  setTimeout(() => syncFromSheets(false), 1500);
 
   // Auto-search on page load
   const urlLoc = getLocationFromURL();
