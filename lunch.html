@@ -1157,7 +1157,7 @@
           if (err.code === 3) msg = '定位超時,請再試一次';
           reject(new Error(msg));
         },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 300000 }
       );
     });
   }
@@ -1197,7 +1197,7 @@
         html += '<div class="nearby-empty">附近沒找到餐廳(可能地圖資料不完整),請手動輸入</div>';
       } else {
         html += '<div class="nearby-grid">';
-        results.slice(0, 15).forEach(r => {
+        results.slice(0, 5).forEach(r => {
           const safeName = JSON.stringify(r.name).replace(/"/g, '&quot;');
           html += '<button class="nearby-btn" onclick="recordLunch(' + safeName + ')">';
           html += '<span>' + escapeHtml(r.name) + '</span>';
@@ -1261,14 +1261,17 @@
 
   renderAll();
 
-  // If URL contains location params (from Shortcuts), auto-search
+  // Auto-search on page load
   const urlLoc = getLocationFromURL();
   if (urlLoc) {
+    // 來自捷徑：使用捷徑傳入的座標
     setTimeout(() => searchNearby(urlLoc), 300);
-    // Clean URL so it doesn't re-trigger on refresh
     if (window.history.replaceState) {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
+  } else {
+    // 一般開啟：自動請求定位並搜尋
+    setTimeout(() => searchNearby(), 600);
   }
 </script>
 </body>
