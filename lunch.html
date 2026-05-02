@@ -791,39 +791,50 @@
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }
 
-  // ── 從 Google Sheets 讀取資料（換裝置時還原）──
-  async function syncFromSheets(manual) {
+  // ── 從 Google Sheets 讀取資料（JSONP 繞過 CORS）──
+  function syncFromSheets(manual) {
     if (!SHEETS_URL) return;
     if (manual) showToast('☁ 同步中...');
-    try {
-      const resp = await fetch(SHEETS_URL + '?action=getAll', { method: 'GET' });
-      if (!resp.ok) return;
-      const data = await resp.json();
-      if (!data.ok || !Array.isArray(data.records) || data.records.length === 0) return;
 
+    const cbName = '_sc_' + Date.now();
+    const script = document.createElement('script');
+
+    window[cbName] = function(data) {
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+      if (!data || !data.ok || !Array.isArray(data.records) || data.records.length === 0) {
+        if (manual) showToast('☁ 雲端無資料');
+        return;
+      }
       const localIds = new Set(state.records.map(r => r.id));
-      let changed = false;
+      let added = 0;
       data.records.forEach(r => {
         if (!localIds.has(r.id) && r.shop) {
           state.records.push({ id: r.id, date: r.date, time: r.time || '', shop: r.shop, createdAt: Date.now() });
-          changed = true;
+          added++;
         }
       });
-
-      if (changed) {
+      if (added > 0) {
         state.records.sort((a, b) => {
           const dc = a.date.localeCompare(b.date);
           return dc !== 0 ? dc : (a.time || '').localeCompare(b.time || '');
         });
         saveData();
         renderAll();
-        showToast('☁ 已從雲端還原 ' + data.records.length + ' 筆');
+        showToast('☁ 已還原 ' + added + ' 筆紀錄');
       } else if (manual) {
         showToast('☁ 已是最新，無需更新');
       }
-    } catch (e) {
+    };
+
+    script.onerror = function() {
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
       if (manual) showToast('☁ 同步失敗，請檢查網路');
-    }
+    };
+
+    script.src = SHEETS_URL + '?action=getAll&callback=' + cbName;
+    document.head.appendChild(script);
   }
 
   let state = loadData();
