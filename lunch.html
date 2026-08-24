@@ -685,19 +685,21 @@
     margin: 2px 0 4px 48px;
   }
 
+  /* 按鈕固定尺寸,選取時不會撐開造成版面跳動 */
   .payer-chip {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
     background: var(--bg-card);
     border: 1px solid var(--line);
     color: var(--ink-soft);
     font-family: 'Noto Serif TC', serif;
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1;
-    padding: 7px 10px;
+    height: 38px;
+    min-width: 72px;
+    padding: 0 14px;
     cursor: pointer;
-    max-width: 100%;
   }
 
   .payer-chip.on {
@@ -706,30 +708,116 @@
     color: var(--bg-card);
   }
 
-  .payer-chip .amt {
-    width: 62px;
-    padding: 3px 5px;
+  .payer-chip.each {
+    min-width: 96px;
+    font-size: 13px;
+  }
+
+  .payer-more {
+    background: none;
     border: none;
-    border-bottom: 1px solid rgba(251, 246, 236, 0.6);
-    background: transparent;
-    color: inherit;
+    color: var(--ink-soft);
+    font-family: 'Noto Serif TC', serif;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    padding: 6px 0;
+    margin: 0 0 4px 48px;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    display: block;
+  }
+
+  /* 分開付明細 */
+  .split-box {
+    margin: 4px 0 6px 48px;
+    border: 1px dashed var(--line);
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.35);
+  }
+
+  .split-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+  }
+
+  .split-tick {
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--line);
+    background: var(--bg-card);
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
+    color: transparent;
+    cursor: pointer;
+  }
+
+  .split-line.on .split-tick {
+    background: var(--green);
+    border-color: var(--green);
+    color: var(--bg-card);
+  }
+
+  .split-name {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 14px;
+    color: var(--ink-soft);
+    flex: 1;
+    cursor: pointer;
+  }
+
+  .split-line.on .split-name { color: var(--ink); }
+
+  .split-line .amt {
+    width: 82px;
+    padding: 6px 8px;
+    border: 1px solid var(--line);
+    background: var(--bg-card);
+    color: var(--ink);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
     text-align: right;
     outline: none;
     -webkit-appearance: none;
     border-radius: 0;
+    flex-shrink: 0;
   }
 
-  .payer-chip .amt::placeholder { color: rgba(251, 246, 236, 0.55); }
+  .split-line .amt:focus { border-color: var(--green); }
+  .split-line:not(.on) .amt { opacity: 0.35; }
 
-  .payer-clear {
-    display: inline-block;
+  .split-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--line);
+  }
+
+  .split-total {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    line-height: 1;
-    padding: 2px 2px 2px 4px;
-    opacity: 0.75;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--ink-soft);
+  }
+
+  .split-total b { color: var(--green); }
+
+  .split-close {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-family: 'Noto Serif TC', serif;
+    font-size: 12px;
+    padding: 5px 12px;
+    cursor: pointer;
   }
 
   .payer-sum {
@@ -767,6 +855,18 @@
     gap: 8px;
     margin-bottom: 10px;
   }
+
+  .payer-add {
+    border: 1px dashed var(--line) !important;
+    background: none;
+    color: var(--ink-faint);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 11px 12px;
+  }
+
+  .payer-add:active { border-color: var(--green) !important; color: var(--green); }
 
   .payer-setup input {
     width: 100%;
@@ -916,7 +1016,7 @@
     <h3 class="modal-title">修改店名</h3>
     <p id="modal-edit-date" style="color:var(--ink-faint); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.1em; margin:0 0 14px;"></p>
     <input type="text" class="modal-input" id="modal-edit-input" placeholder="輸入新的店名...">
-    <div class="payer-hint" style="margin:14px 0 6px 0;">誰付的錢 · 選一位 · 可填金額</div>
+    <div class="payer-hint" style="margin:14px 0 6px 0;">付款方式</div>
     <div id="modal-edit-payers" style="margin-left:0;"></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('modal-edit')">取消</button>
@@ -943,20 +1043,26 @@
   const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyio5nC5AmshSYi-lgeqzH_FmkZacwukS6SJP7qtjH9eLuh3Dfsw5-vAAqLMsfKI98r/exec';
   // ────────────────────────────────────────────────────
 
-  // 付款人序列化:[{name:'小明',amount:120}] <-> "小明:120|阿華:80"
-  function payersToStr(payers) {
+  const EACH_TAG = '各付各';
+
+  // 付款人序列化:各付各 -> "各付各";其他 -> "小明:120|阿華:80"(沒填金額就是「小明:」)
+  function payersToStr(record) {
+    if (record && record.each) return EACH_TAG;
+    const payers = record && record.payers;
     if (!Array.isArray(payers) || payers.length === 0) return '';
     return payers.map(p => String(p.name).replace(/[:|]/g, ' ') + ':' + (p.amount === '' || p.amount == null ? '' : p.amount)).join('|');
   }
 
   function payersFromStr(str) {
-    if (!str) return [];
-    return String(str).split('|').filter(Boolean).map(seg => {
+    if (!str) return { each: false, payers: [] };
+    if (String(str).trim() === EACH_TAG) return { each: true, payers: [] };
+    const payers = String(str).split('|').filter(Boolean).map(seg => {
       const i = seg.lastIndexOf(':');
       if (i < 0) return { name: seg.trim(), amount: '' };
       const amt = seg.slice(i + 1).trim();
       return { name: seg.slice(0, i).trim(), amount: amt === '' ? '' : Number(amt) };
     }).filter(p => p.name);
+    return { each: false, payers: payers };
   }
 
   function syncToSheets(action, record) {
@@ -968,7 +1074,7 @@
         date:   record.date || '',
         time:   record.time || '',
         shop:   record.shop || '',
-        payers: payersToStr(record.payers),
+        payers: payersToStr(record),
       });
       // 用 GET + no-cors，避免 POST redirect 問題
       fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' })
@@ -1009,7 +1115,8 @@
       let added = 0;
       data.records.forEach(r => {
         if (!localIds.has(r.id) && r.shop) {
-          state.records.push({ id: r.id, date: r.date, time: r.time || '', shop: r.shop, payers: payersFromStr(r.payers), createdAt: Date.now() });
+          const pay = payersFromStr(r.payers);
+          state.records.push({ id: r.id, date: r.date, time: r.time || '', shop: r.shop, payers: pay.payers, each: pay.each, createdAt: Date.now() });
           added++;
         }
       });
@@ -1036,19 +1143,34 @@
     document.head.appendChild(script);
   }
 
+  const MAX_PAYERS = 4;
+
   let state = loadData();
-  if (!Array.isArray(state.payerNames)) state.payerNames = ['我', '', '', ''];
-  while (state.payerNames.length < 4) state.payerNames.push('');
-  state.payerNames = state.payerNames.slice(0, 4);
-  // 單選:每筆最多一位付款人(舊資料若有多位,只留第一位)
+  if (!Array.isArray(state.payerNames)) state.payerNames = ['我'];
+  // 「各付各」現在是獨立的付款方式,不再佔用人名格
+  state.payerNames = state.payerNames
+    .map(n => String(n || '').trim())
+    .filter(n => n && n !== EACH_TAG && n !== '各付各的')
+    .slice(0, MAX_PAYERS);
+  if (state.payerNames.length === 0) state.payerNames = ['我'];
+
   state.records.forEach(r => {
     if (!Array.isArray(r.payers)) r.payers = [];
-    if (r.payers.length > 1) r.payers = [r.payers[0]];
+    // 舊資料若把「各付各」存成人名,轉成 each 旗標
+    if (r.payers.some(p => p.name === EACH_TAG || p.name === '各付各的')) {
+      r.each = true;
+      r.payers = [];
+    }
+    if (typeof r.each !== 'boolean') r.each = false;
   });
+  saveData();   // 立刻把遷移後的資料寫回,避免下次載入又跑一次
 
   function activePayerNames() {
     return state.payerNames.map(n => String(n || '').trim()).filter(Boolean);
   }
+
+  // 哪些紀錄目前展開了「分開付」明細
+  const splitOpen = new Set();
 
   // ========== Utils ==========
   function todayISO() {
@@ -1138,7 +1260,7 @@
     }
 
     const t = nowTimeStr();
-    const newRecord = { id: uid(), date: today, shop: shop, time: t, payers: [], createdAt: Date.now() };
+    const newRecord = { id: uid(), date: today, shop: shop, time: t, payers: [], each: false, createdAt: Date.now() };
     state.records.push(newRecord);
     showToast('✓ 已記下 · ' + t);
     saveData();
@@ -1149,58 +1271,104 @@
   window.recordLunch = recordLunch;
 
   // ========== 付款人 UI ==========
-  function buildPayerRow(r, ctx) {
-    const names = activePayerNames();
-    const style = ctx === 'modal' ? ' style="margin-left:0;"' : '';
-    const chips = names.map(n => {
-      const p = (r.payers || []).find(x => x.name === n);
-      const on = !!p;
-      const val = (!p || p.amount === '' || p.amount == null) ? '' : String(p.amount);
-      return '<span class="payer-chip' + (on ? ' on' : '') + '" data-rid="' + r.id + '" data-name="' + escapeHtml(n) + '">' +
-             escapeHtml(n) +
-             (on ? '<input class="amt" type="text" inputmode="decimal" placeholder="$" value="' + escapeHtml(val) + '">' +
-                   '<span class="payer-clear" data-rid="' + r.id + '">×</span>' : '') +
-             '</span>';
-    }).join('');
-    return '<div class="payer-row" data-rid="' + r.id + '" data-ctx="' + (ctx || 'today') + '"' + style + '>' + chips + '</div>';
-  }
-
-  function buildPayerSum(r, ctx) {
-    const style = ctx === 'modal' ? ' style="margin-left:0;"' : '';
-    const p = (r.payers || [])[0];
-    let inner = '';
-    if (p) {
-      const n = Number(p.amount);
-      const hasAmt = p.amount !== '' && p.amount != null && !isNaN(n);
-      inner = escapeHtml(p.name) + ' 付' + (hasAmt ? ' <b>$' + n + '</b>' : '');
-    }
-    return '<div class="payer-sum" data-rid="' + r.id + '" data-ctx="' + (ctx || 'today') + '"' + style + '>' + inner + '</div>';
-  }
-
+  // 兩層式:第一層單選(誰付 / 各付各),要拆帳才展開第二層填金額
   function findRecord(id) { return state.records.find(r => r.id === id); }
 
-  function payerLine(r) {
-    const p = (r.payers || [])[0];
-    if (!p) return '';
+  function hasAmount(p) {
     const n = Number(p.amount);
-    const hasAmt = p.amount !== '' && p.amount != null && !isNaN(n);
-    return '<span class="history-payer">' + escapeHtml(p.name) + ' 付' + (hasAmt ? ' $' + n : '') + '</span>';
+    return p.amount !== '' && p.amount != null && !isNaN(n);
+  }
+
+  function payerText(r) {
+    if (r.each) return '各付各';
+    const ps = r.payers || [];
+    if (ps.length === 0) return '';
+    if (ps.length === 1 && !hasAmount(ps[0])) return ps[0].name + ' 付';
+    let total = 0;
+    const parts = ps.map(p => {
+      if (hasAmount(p)) { total += Number(p.amount); return p.name + ' $' + Number(p.amount); }
+      return p.name;
+    });
+    return parts.join(' · ') + (ps.length > 1 && total > 0 ? ' — 合計 $' + total : '');
+  }
+
+  function buildPayerBlock(r, ctx) {
+    const names = activePayerNames();
+    const ml = ctx === 'modal' ? '0' : '48px';
+    if (names.length === 0) {
+      return '<div class="payer-block" data-rid="' + r.id + '" data-ctx="' + ctx + '">' +
+             '<div class="payer-hint" style="margin-left:' + ml + ';">尚未設定付款人 · 點「設定」新增</div></div>';
+    }
+
+    let html = '<div class="payer-block" data-rid="' + r.id + '" data-ctx="' + ctx + '">';
+
+    if (splitOpen.has(r.id)) {
+      // 第二層:分開付明細
+      let total = 0;
+      html += '<div class="payer-hint" style="margin-left:' + ml + ';">分開付 · 勾選並填金額</div>';
+      html += '<div class="split-box" style="margin-left:' + ml + ';">';
+      names.forEach(n => {
+        const p = (r.payers || []).find(x => x.name === n);
+        const on = !!p;
+        if (on && hasAmount(p)) total += Number(p.amount);
+        const val = (!p || !hasAmount(p)) ? '' : String(Number(p.amount));
+        html += '<div class="split-line' + (on ? ' on' : '') + '" data-rid="' + r.id + '" data-name="' + escapeHtml(n) + '">' +
+                '<span class="split-tick">✓</span>' +
+                '<span class="split-name">' + escapeHtml(n) + '</span>' +
+                '<input class="amt" type="text" inputmode="numeric" placeholder="$" value="' + escapeHtml(val) + '">' +
+                '</div>';
+      });
+      html += '<div class="split-foot">' +
+              '<span class="split-total">合計 <b>$' + total + '</b></span>' +
+              '<button class="split-close" data-rid="' + r.id + '">收起</button>' +
+              '</div></div>';
+    } else {
+      // 第一層:單選
+      html += '<div class="payer-hint" style="margin-left:' + ml + ';">誰付的錢?</div>';
+      html += '<div class="payer-row" style="margin-left:' + ml + ';">';
+      names.forEach(n => {
+        const on = !r.each && (r.payers || []).length === 1 && r.payers[0].name === n;
+        html += '<span class="payer-chip' + (on ? ' on' : '') + '" data-rid="' + r.id + '" data-name="' + escapeHtml(n) + '">' + escapeHtml(n) + '</span>';
+      });
+      html += '</div>';
+      html += '<div class="payer-row" style="margin-left:' + ml + ';">' +
+              '<span class="payer-chip each' + (r.each ? ' on' : '') + '" data-rid="' + r.id + '" data-each="1">各付各的</span>' +
+              '</div>';
+      html += '<button class="payer-more" data-rid="' + r.id + '" style="margin-left:' + ml + ';">分開付 · 填金額 ›</button>';
+    }
+
+    const txt = payerText(r);
+    html += '<div class="payer-sum" style="margin-left:' + ml + ';">' + (txt ? escapeHtml(txt).replace(/合計 \$(\d+)/, '合計 <b>$$$1</b>') : '') + '</div>';
+    html += '</div>';
+    return html;
+  }
+
+  function payerLine(r) {
+    const txt = payerText(r);
+    if (!txt) return '';
+    return '<span class="history-payer">' + escapeHtml(txt) + '</span>';
   }
 
   function refreshPayerUI(rid) {
     const r = findRecord(rid);
     if (!r) return;
-    document.querySelectorAll('.payer-row[data-rid="' + rid + '"]').forEach(el => {
-      el.outerHTML = buildPayerRow(r, el.dataset.ctx);
+    document.querySelectorAll('.payer-block[data-rid="' + rid + '"]').forEach(el => {
+      el.outerHTML = buildPayerBlock(r, el.dataset.ctx);
     });
-    refreshPayerSum(rid);
   }
 
+  // 只更新合計與摘要,不重繪輸入框(避免打字時失去焦點)
   function refreshPayerSum(rid) {
     const r = findRecord(rid);
     if (!r) return;
-    document.querySelectorAll('.payer-sum[data-rid="' + rid + '"]').forEach(el => {
-      el.outerHTML = buildPayerSum(r, el.dataset.ctx);
+    let total = 0;
+    (r.payers || []).forEach(p => { if (hasAmount(p)) total += Number(p.amount); });
+    document.querySelectorAll('.payer-block[data-rid="' + rid + '"] .split-total').forEach(el => {
+      el.innerHTML = '合計 <b>$' + total + '</b>';
+    });
+    const txt = payerText(r);
+    document.querySelectorAll('.payer-block[data-rid="' + rid + '"] .payer-sum').forEach(el => {
+      el.innerHTML = txt ? escapeHtml(txt).replace(/合計 \$(\d+)/, '合計 <b>$$$1</b>') : '';
     });
   }
 
@@ -1216,57 +1384,103 @@
     }, 700);
   }
 
-  document.addEventListener('click', e => {
-    if (e.target.classList && e.target.classList.contains('amt')) return; // 點金額欄不切換
-    if (e.target.classList && e.target.classList.contains('payer-clear')) {
-      const rid0 = e.target.dataset.rid;
-      const r0 = findRecord(rid0);
-      if (r0) {
-        r0.payers = [];
-        saveData();
-        syncToSheets('update', r0);
-        refreshPayerUI(rid0);
-        renderHistory();
-      }
-      return;
-    }
-    const chip = e.target.closest ? e.target.closest('.payer-chip') : null;
-    if (!chip) return;
-    const rid = chip.dataset.rid;
-    const name = chip.dataset.name;
-    const r = findRecord(rid);
-    if (!r) return;
-    if (!Array.isArray(r.payers)) r.payers = [];
-    // 單選:一餐只有一個人付錢。點同一個人 = 取消,點別人 = 換人(金額沿用)
-    const cur = r.payers[0];
-    if (cur && cur.name === name) r.payers = [];
-    else r.payers = [{ name: name, amount: cur ? cur.amount : '' }];
+  function commitPayer(r) {
     saveData();
     syncToSheets('update', r);
-    refreshPayerUI(rid);
+    refreshPayerUI(r.id);
     renderHistory();
-  });
+  }
 
-  document.addEventListener('input', e => {
-    if (!e.target.classList || !e.target.classList.contains('amt')) return;
-    const chip = e.target.closest('.payer-chip');
+  document.addEventListener('click', e => {
+    const t = e.target;
+    if (!t || !t.closest) return;
+    if (t.classList.contains('amt')) return;   // 點金額欄不切換
+
+    // 收起分開付
+    const closeBtn = t.closest('.split-close');
+    if (closeBtn) {
+      splitOpen.delete(closeBtn.dataset.rid);
+      refreshPayerUI(closeBtn.dataset.rid);
+      return;
+    }
+
+    // 展開分開付
+    const moreBtn = t.closest('.payer-more');
+    if (moreBtn) {
+      const r = findRecord(moreBtn.dataset.rid);
+      if (!r) return;
+      splitOpen.add(moreBtn.dataset.rid);
+      if (r.each) { r.each = false; saveData(); }
+      refreshPayerUI(moreBtn.dataset.rid);
+      return;
+    }
+
+    // 分開付:勾選 / 取消某人
+    const line = t.closest('.split-line');
+    if (line) {
+      const r = findRecord(line.dataset.rid);
+      if (!r) return;
+      const name = line.dataset.name;
+      const i = (r.payers || []).findIndex(p => p.name === name);
+      if (i >= 0) r.payers.splice(i, 1);
+      else r.payers.push({ name: name, amount: '' });
+      r.each = false;
+      commitPayer(r);
+      return;
+    }
+
+    // 第一層:單選一位付款人 / 各付各
+    const chip = t.closest('.payer-chip');
     if (!chip) return;
     const r = findRecord(chip.dataset.rid);
     if (!r) return;
-    const p = (r.payers || []).find(x => x.name === chip.dataset.name);
-    if (!p) return;
-    const raw = e.target.value.replace(/[^\d.]/g, '');
-    p.amount = raw === '' ? '' : Number(raw);
-    refreshPayerSum(chip.dataset.rid);
-    queuePayerSync(chip.dataset.rid);
+    if (!Array.isArray(r.payers)) r.payers = [];
+
+    if (chip.dataset.each) {
+      r.each = !r.each;
+      if (r.each) r.payers = [];
+    } else {
+      const name = chip.dataset.name;
+      const only = !r.each && r.payers.length === 1 && r.payers[0].name === name;
+      r.each = false;
+      r.payers = only ? [] : [{ name: name, amount: '' }];
+    }
+    commitPayer(r);
   });
 
-  // 付款人姓名設定
+  document.addEventListener('input', e => {
+    const inp = e.target;
+    if (!inp.classList || !inp.classList.contains('amt')) return;
+    const line = inp.closest('.split-line');
+    if (!line) return;
+    const r = findRecord(line.dataset.rid);
+    if (!r) return;
+    const name = line.dataset.name;
+    let p = (r.payers || []).find(x => x.name === name);
+    const raw = inp.value.replace(/[^\d]/g, '');
+    if (!p) {                       // 直接打金額 = 自動勾選這個人
+      if (raw === '') return;
+      p = { name: name, amount: '' };
+      r.payers.push(p);
+      r.each = false;
+      line.classList.add('on');
+    }
+    p.amount = raw === '' ? '' : Number(raw);
+    refreshPayerSum(line.dataset.rid);
+    queuePayerSync(line.dataset.rid);
+  });
+
+  // 付款人姓名設定(最多 4 位,可用 + 新增)
   function renderPayerSetup() {
     const wrap = document.getElementById('payer-setup');
-    wrap.innerHTML = [0, 1, 2, 3].map(i =>
-      '<input type="text" data-i="' + i + '" maxlength="8" placeholder="付款人 ' + (i + 1) + '" value="' + escapeHtml(state.payerNames[i] || '') + '">'
+    let html = state.payerNames.map((n, i) =>
+      '<input type="text" data-i="' + i + '" maxlength="8" placeholder="付款人 ' + (i + 1) + '" value="' + escapeHtml(n || '') + '">'
     ).join('');
+    if (state.payerNames.length < MAX_PAYERS) {
+      html += '<button class="payer-add" id="payer-add">＋ 新增</button>';
+    }
+    wrap.innerHTML = html;
+
     // 用 input 而不是 change:change 會在「失去焦點」時才觸發,
     // 導致你打完名字直接去點下面的付款人按鈕時,重繪把按鈕換掉,第一下點擊被吃掉。
     wrap.querySelectorAll('input').forEach(inp => {
@@ -1276,6 +1490,19 @@
         renderToday();
       });
     });
+
+    const addBtn = document.getElementById('payer-add');
+    if (addBtn) {
+      addBtn.addEventListener('click', () => {
+        if (state.payerNames.length >= MAX_PAYERS) return;
+        state.payerNames.push('');
+        saveData();
+        renderPayerSetup();
+        const inputs = wrap.querySelectorAll('input');
+        const last = inputs[inputs.length - 1];
+        if (last) last.focus();
+      });
+    }
   }
 
   document.getElementById('payer-setup-toggle').addEventListener('click', () => {
@@ -1300,7 +1527,6 @@
     } else {
       const isFull = todayRecords.length >= 3;
       const limitLabel = isFull ? '今日已滿 3 家' : '已記 ' + todayRecords.length + ' / 3 家';
-      const names = activePayerNames();
       status.innerHTML =
         '<div class="today-multi">' +
         todayRecords.map(r =>
@@ -1309,11 +1535,7 @@
           '<span class="today-shop">' + escapeHtml(r.shop) + '</span>' +
           '<button class="today-del-btn" onclick="deleteTodayRecord(\'' + r.id + '\')">×</button>' +
           '</div>' +
-          (names.length === 0
-            ? '<div class="payer-hint">尚未設定付款人 · 點上方「設定」新增</div>'
-            : '<div class="payer-hint">誰付的錢?(選一位)</div>' +
-              buildPayerRow(r, 'today') +
-              buildPayerSum(r))
+          buildPayerBlock(r, 'today')
         ).join('') +
         '<div class="today-limit-bar">' +
         '<span class="today-limit-text' + (isFull ? ' full' : '') + '">' + limitLabel + '</span>' +
@@ -1440,9 +1662,7 @@
     const input = document.getElementById('modal-edit-input');
     input.value = r.shop;
     const mp = document.getElementById('modal-edit-payers');
-    mp.innerHTML = activePayerNames().length === 0
-      ? '<div class="payer-hint" style="margin-left:0;">尚未設定付款人</div>'
-      : buildPayerRow(r, 'modal') + buildPayerSum(r, 'modal');
+    mp.innerHTML = buildPayerBlock(r, 'modal');
     document.getElementById('modal-edit').classList.add('show');
     setTimeout(() => { input.focus(); input.select(); }, 150);
     const confirmBtn = document.getElementById('modal-edit-yes');
