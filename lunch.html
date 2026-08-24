@@ -111,9 +111,15 @@
   }
 
   .today-status {
-    margin-top: 18px;
-    padding-top: 18px;
-    border-top: 1px dashed var(--line);
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  .today-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    padding: 18px 18px 16px;
+    margin-bottom: 26px;
   }
 
   .today-status-empty {
@@ -670,26 +676,199 @@
     background: var(--accent);
     color: var(--bg-card);
   }
+
+  /* ===== 付款人 Payers ===== */
+  .payer-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 2px 0 4px 48px;
+  }
+
+  .payer-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-family: 'Noto Serif TC', serif;
+    font-size: 13px;
+    line-height: 1;
+    padding: 7px 10px;
+    cursor: pointer;
+    max-width: 100%;
+  }
+
+  .payer-chip.on {
+    background: var(--green);
+    border-color: var(--green);
+    color: var(--bg-card);
+  }
+
+  .payer-chip .amt {
+    width: 62px;
+    padding: 3px 5px;
+    border: none;
+    border-bottom: 1px solid rgba(251, 246, 236, 0.6);
+    background: transparent;
+    color: inherit;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    text-align: right;
+    outline: none;
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+
+  .payer-chip .amt::placeholder { color: rgba(251, 246, 236, 0.55); }
+
+  .payer-clear {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1;
+    padding: 2px 2px 2px 4px;
+    opacity: 0.75;
+  }
+
+  .payer-sum {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--ink-faint);
+    margin: 0 0 6px 48px;
+  }
+
+  .payer-sum b { color: var(--green); font-weight: 600; }
+
+  .payer-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--ink-faint);
+    margin: 0 0 4px 48px;
+    text-transform: uppercase;
+  }
+
+  .history-payer {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--green);
+    margin-top: 3px;
+  }
+
+  /* 付款人設定 */
+  .payer-setup {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .payer-setup input {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--line);
+    background: var(--bg-card);
+    font-family: 'Noto Serif TC', serif;
+    font-size: 14px;
+    color: var(--ink);
+    outline: none;
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+
+  .payer-setup input:focus { border-color: var(--green); }
+  .payer-setup input::placeholder { color: var(--ink-faint); font-style: italic; }
+
+  .collapse-toggle {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--ink-faint);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    padding: 4px 9px;
+    cursor: pointer;
+  }
+
+  /* 附近搜尋:診斷用 */
+  .nearby-error .retry {
+    display: block;
+    margin-top: 10px;
+    background: var(--accent);
+    color: var(--bg-card);
+    border: none;
+    padding: 9px 14px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+  }
+
+  .nearby-error .why {
+    display: block;
+    margin-top: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    color: var(--ink-soft);
+    line-height: 1.7;
+  }
+
+  .nearby-more {
+    width: 100%;
+    margin-top: 8px;
+    background: none;
+    border: 1px dashed var(--line);
+    color: var(--ink-soft);
+    font-family: 'Noto Serif TC', serif;
+    font-size: 13px;
+    padding: 10px;
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- TODAY -->
+  <!-- TODAY (只放日期) -->
   <div class="today-card">
     <div class="date-label" id="date-label">TODAY</div>
     <div class="date-main" id="date-main">—</div>
     <div class="date-sub" id="date-sub">—</div>
-    <div class="today-status" id="today-status"></div>
   </div>
 
-  <!-- CUSTOM INPUT (moved to top) -->
+  <!-- 1. 先輸入店名 -->
   <div class="section-label">
-    <span>Write In <span class="zh">· 手動輸入</span></span>
+    <span>Write In <span class="zh">· 1. 輸入店名</span></span>
   </div>
   <div class="custom-input-wrap">
     <input type="text" id="custom-input" placeholder="輸入店名..." autocomplete="off">
     <button id="btn-custom" class="btn-record-full">記 錄 今 日 午 餐</button>
+  </div>
+
+  <!-- 2. 今日已記錄 + 誰付的錢 -->
+  <div class="section-label">
+    <span>Today <span class="zh">· 2. 今天吃了 &amp; 誰付的</span></span>
+  </div>
+  <div class="today-panel">
+    <div class="today-status" id="today-status"></div>
+  </div>
+
+  <!-- PAYER SETUP -->
+  <div class="section-label">
+    <span>Payers <span class="zh">· 付錢的人(最多 4 位)</span></span>
+    <button class="collapse-toggle" id="payer-setup-toggle">設定</button>
+  </div>
+  <div id="payer-setup-wrap" style="display:none;">
+    <div class="payer-setup" id="payer-setup"></div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--ink-faint);margin-bottom:22px;">
+      留空即不顯示該按鈕 · 名字改了不影響已存的紀錄
+    </div>
   </div>
 
   <!-- QUICK SHOPS -->
@@ -737,6 +916,8 @@
     <h3 class="modal-title">修改店名</h3>
     <p id="modal-edit-date" style="color:var(--ink-faint); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.1em; margin:0 0 14px;"></p>
     <input type="text" class="modal-input" id="modal-edit-input" placeholder="輸入新的店名...">
+    <div class="payer-hint" style="margin:14px 0 6px 0;">誰付的錢 · 選一位 · 可填金額</div>
+    <div id="modal-edit-payers" style="margin-left:0;"></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('modal-edit')">取消</button>
       <button class="btn-confirm" id="modal-edit-yes">確定修改</button>
@@ -762,6 +943,22 @@
   const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyio5nC5AmshSYi-lgeqzH_FmkZacwukS6SJP7qtjH9eLuh3Dfsw5-vAAqLMsfKI98r/exec';
   // ────────────────────────────────────────────────────
 
+  // 付款人序列化:[{name:'小明',amount:120}] <-> "小明:120|阿華:80"
+  function payersToStr(payers) {
+    if (!Array.isArray(payers) || payers.length === 0) return '';
+    return payers.map(p => String(p.name).replace(/[:|]/g, ' ') + ':' + (p.amount === '' || p.amount == null ? '' : p.amount)).join('|');
+  }
+
+  function payersFromStr(str) {
+    if (!str) return [];
+    return String(str).split('|').filter(Boolean).map(seg => {
+      const i = seg.lastIndexOf(':');
+      if (i < 0) return { name: seg.trim(), amount: '' };
+      const amt = seg.slice(i + 1).trim();
+      return { name: seg.slice(0, i).trim(), amount: amt === '' ? '' : Number(amt) };
+    }).filter(p => p.name);
+  }
+
   function syncToSheets(action, record) {
     if (!SHEETS_URL) return;
     try {
@@ -771,9 +968,11 @@
         date:   record.date || '',
         time:   record.time || '',
         shop:   record.shop || '',
+        payers: payersToStr(record.payers),
       });
       // 用 GET + no-cors，避免 POST redirect 問題
-      fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+      fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' })
+        .catch(() => { /* 離線時靜默失敗,本地資料優先 */ });
     } catch (e) { /* 本地資料優先，同步失敗靜默處理 */ }
   }
 
@@ -810,7 +1009,7 @@
       let added = 0;
       data.records.forEach(r => {
         if (!localIds.has(r.id) && r.shop) {
-          state.records.push({ id: r.id, date: r.date, time: r.time || '', shop: r.shop, createdAt: Date.now() });
+          state.records.push({ id: r.id, date: r.date, time: r.time || '', shop: r.shop, payers: payersFromStr(r.payers), createdAt: Date.now() });
           added++;
         }
       });
@@ -838,6 +1037,18 @@
   }
 
   let state = loadData();
+  if (!Array.isArray(state.payerNames)) state.payerNames = ['我', '', '', ''];
+  while (state.payerNames.length < 4) state.payerNames.push('');
+  state.payerNames = state.payerNames.slice(0, 4);
+  // 單選:每筆最多一位付款人(舊資料若有多位,只留第一位)
+  state.records.forEach(r => {
+    if (!Array.isArray(r.payers)) r.payers = [];
+    if (r.payers.length > 1) r.payers = [r.payers[0]];
+  });
+
+  function activePayerNames() {
+    return state.payerNames.map(n => String(n || '').trim()).filter(Boolean);
+  }
 
   // ========== Utils ==========
   function todayISO() {
@@ -927,7 +1138,7 @@
     }
 
     const t = nowTimeStr();
-    const newRecord = { id: uid(), date: today, shop: shop, time: t, createdAt: Date.now() };
+    const newRecord = { id: uid(), date: today, shop: shop, time: t, payers: [], createdAt: Date.now() };
     state.records.push(newRecord);
     showToast('✓ 已記下 · ' + t);
     saveData();
@@ -936,6 +1147,143 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   window.recordLunch = recordLunch;
+
+  // ========== 付款人 UI ==========
+  function buildPayerRow(r, ctx) {
+    const names = activePayerNames();
+    const style = ctx === 'modal' ? ' style="margin-left:0;"' : '';
+    const chips = names.map(n => {
+      const p = (r.payers || []).find(x => x.name === n);
+      const on = !!p;
+      const val = (!p || p.amount === '' || p.amount == null) ? '' : String(p.amount);
+      return '<span class="payer-chip' + (on ? ' on' : '') + '" data-rid="' + r.id + '" data-name="' + escapeHtml(n) + '">' +
+             escapeHtml(n) +
+             (on ? '<input class="amt" type="text" inputmode="decimal" placeholder="$" value="' + escapeHtml(val) + '">' +
+                   '<span class="payer-clear" data-rid="' + r.id + '">×</span>' : '') +
+             '</span>';
+    }).join('');
+    return '<div class="payer-row" data-rid="' + r.id + '" data-ctx="' + (ctx || 'today') + '"' + style + '>' + chips + '</div>';
+  }
+
+  function buildPayerSum(r, ctx) {
+    const style = ctx === 'modal' ? ' style="margin-left:0;"' : '';
+    const p = (r.payers || [])[0];
+    let inner = '';
+    if (p) {
+      const n = Number(p.amount);
+      const hasAmt = p.amount !== '' && p.amount != null && !isNaN(n);
+      inner = escapeHtml(p.name) + ' 付' + (hasAmt ? ' <b>$' + n + '</b>' : '');
+    }
+    return '<div class="payer-sum" data-rid="' + r.id + '" data-ctx="' + (ctx || 'today') + '"' + style + '>' + inner + '</div>';
+  }
+
+  function findRecord(id) { return state.records.find(r => r.id === id); }
+
+  function payerLine(r) {
+    const p = (r.payers || [])[0];
+    if (!p) return '';
+    const n = Number(p.amount);
+    const hasAmt = p.amount !== '' && p.amount != null && !isNaN(n);
+    return '<span class="history-payer">' + escapeHtml(p.name) + ' 付' + (hasAmt ? ' $' + n : '') + '</span>';
+  }
+
+  function refreshPayerUI(rid) {
+    const r = findRecord(rid);
+    if (!r) return;
+    document.querySelectorAll('.payer-row[data-rid="' + rid + '"]').forEach(el => {
+      el.outerHTML = buildPayerRow(r, el.dataset.ctx);
+    });
+    refreshPayerSum(rid);
+  }
+
+  function refreshPayerSum(rid) {
+    const r = findRecord(rid);
+    if (!r) return;
+    document.querySelectorAll('.payer-sum[data-rid="' + rid + '"]').forEach(el => {
+      el.outerHTML = buildPayerSum(r, el.dataset.ctx);
+    });
+  }
+
+  let payerSyncTimer = null;
+  function queuePayerSync(rid) {
+    clearTimeout(payerSyncTimer);
+    payerSyncTimer = setTimeout(() => {
+      const r = findRecord(rid);
+      if (!r) return;
+      saveData();
+      syncToSheets('update', r);
+      renderHistory();
+    }, 700);
+  }
+
+  document.addEventListener('click', e => {
+    if (e.target.classList && e.target.classList.contains('amt')) return; // 點金額欄不切換
+    if (e.target.classList && e.target.classList.contains('payer-clear')) {
+      const rid0 = e.target.dataset.rid;
+      const r0 = findRecord(rid0);
+      if (r0) {
+        r0.payers = [];
+        saveData();
+        syncToSheets('update', r0);
+        refreshPayerUI(rid0);
+        renderHistory();
+      }
+      return;
+    }
+    const chip = e.target.closest ? e.target.closest('.payer-chip') : null;
+    if (!chip) return;
+    const rid = chip.dataset.rid;
+    const name = chip.dataset.name;
+    const r = findRecord(rid);
+    if (!r) return;
+    if (!Array.isArray(r.payers)) r.payers = [];
+    // 單選:一餐只有一個人付錢。點同一個人 = 取消,點別人 = 換人(金額沿用)
+    const cur = r.payers[0];
+    if (cur && cur.name === name) r.payers = [];
+    else r.payers = [{ name: name, amount: cur ? cur.amount : '' }];
+    saveData();
+    syncToSheets('update', r);
+    refreshPayerUI(rid);
+    renderHistory();
+  });
+
+  document.addEventListener('input', e => {
+    if (!e.target.classList || !e.target.classList.contains('amt')) return;
+    const chip = e.target.closest('.payer-chip');
+    if (!chip) return;
+    const r = findRecord(chip.dataset.rid);
+    if (!r) return;
+    const p = (r.payers || []).find(x => x.name === chip.dataset.name);
+    if (!p) return;
+    const raw = e.target.value.replace(/[^\d.]/g, '');
+    p.amount = raw === '' ? '' : Number(raw);
+    refreshPayerSum(chip.dataset.rid);
+    queuePayerSync(chip.dataset.rid);
+  });
+
+  // 付款人姓名設定
+  function renderPayerSetup() {
+    const wrap = document.getElementById('payer-setup');
+    wrap.innerHTML = [0, 1, 2, 3].map(i =>
+      '<input type="text" data-i="' + i + '" maxlength="8" placeholder="付款人 ' + (i + 1) + '" value="' + escapeHtml(state.payerNames[i] || '') + '">'
+    ).join('');
+    // 用 input 而不是 change:change 會在「失去焦點」時才觸發,
+    // 導致你打完名字直接去點下面的付款人按鈕時,重繪把按鈕換掉,第一下點擊被吃掉。
+    wrap.querySelectorAll('input').forEach(inp => {
+      inp.addEventListener('input', () => {
+        state.payerNames[Number(inp.dataset.i)] = inp.value.trim();
+        saveData();
+        renderToday();
+      });
+    });
+  }
+
+  document.getElementById('payer-setup-toggle').addEventListener('click', () => {
+    const w = document.getElementById('payer-setup-wrap');
+    const open = w.style.display !== 'none';
+    w.style.display = open ? 'none' : 'block';
+    document.getElementById('payer-setup-toggle').textContent = open ? '設定' : '收起';
+  });
 
   function renderToday() {
     const today = todayISO();
@@ -952,6 +1300,7 @@
     } else {
       const isFull = todayRecords.length >= 3;
       const limitLabel = isFull ? '今日已滿 3 家' : '已記 ' + todayRecords.length + ' / 3 家';
+      const names = activePayerNames();
       status.innerHTML =
         '<div class="today-multi">' +
         todayRecords.map(r =>
@@ -959,7 +1308,12 @@
           '<span class="today-time">' + (r.time || '') + '</span>' +
           '<span class="today-shop">' + escapeHtml(r.shop) + '</span>' +
           '<button class="today-del-btn" onclick="deleteTodayRecord(\'' + r.id + '\')">×</button>' +
-          '</div>'
+          '</div>' +
+          (names.length === 0
+            ? '<div class="payer-hint">尚未設定付款人 · 點上方「設定」新增</div>'
+            : '<div class="payer-hint">誰付的錢?(選一位)</div>' +
+              buildPayerRow(r, 'today') +
+              buildPayerSum(r))
         ).join('') +
         '<div class="today-limit-bar">' +
         '<span class="today-limit-text' + (isFull ? ' full' : '') + '">' + limitLabel + '</span>' +
@@ -1047,7 +1401,7 @@
         ) +
         '<div class="history-shop ' + (date === today ? 'today-mark' : '') + '">' +
         (r.time ? '<span class="history-time">' + r.time + '</span>' : '') +
-        escapeHtml(r.shop) + '</div>' +
+        escapeHtml(r.shop) + payerLine(r) + '</div>' +
         '<div class="history-actions">' +
         '<button class="history-edit" onclick="confirmEdit(\'' + r.id + '\')">編輯</button>' +
         '<button class="history-delete" onclick="confirmDelete(\'' + r.id + '\')">刪除</button>' +
@@ -1085,6 +1439,10 @@
     document.getElementById('modal-edit-date').textContent = formatDateFull(r.date) + ' · ' + r.shop;
     const input = document.getElementById('modal-edit-input');
     input.value = r.shop;
+    const mp = document.getElementById('modal-edit-payers');
+    mp.innerHTML = activePayerNames().length === 0
+      ? '<div class="payer-hint" style="margin-left:0;">尚未設定付款人</div>'
+      : buildPayerRow(r, 'modal') + buildPayerSum(r, 'modal');
     document.getElementById('modal-edit').classList.add('show');
     setTimeout(() => { input.focus(); input.select(); }, 150);
     const confirmBtn = document.getElementById('modal-edit-yes');
@@ -1127,7 +1485,7 @@
         ) +
         '<div class="history-shop ' + (date === today ? 'today-mark' : '') + '">' +
         (r.time ? '<span class="history-time">' + r.time + '</span>' : '') +
-        escapeHtml(r.shop) + '</div>' +
+        escapeHtml(r.shop) + payerLine(r) + '</div>' +
         '<div class="history-actions">' +
         '<button class="history-edit" onclick="confirmEdit(\'' + r.id + '\')">編輯</button>' +
         '<button class="history-delete" onclick="confirmDelete(\'' + r.id + '\')">刪除</button>' +
@@ -1158,57 +1516,97 @@
     return (m / 1000).toFixed(1) + 'km';
   }
 
-  async function fetchNearbyRestaurants(lat, lon) {
-    // Overpass QL query: restaurants, fast_food, cafe within 200m
-    const radius = 200;
-    const query = `
-      [out:json][timeout:10];
-      (
-        node["amenity"~"restaurant|fast_food|cafe|food_court"](around:${radius},${lat},${lon});
-        way["amenity"~"restaurant|fast_food|cafe|food_court"](around:${radius},${lat},${lon});
-      );
-      out center tags 30;
-    `;
+  // 多個 Overpass 節點,主站掛掉/塞車時自動換下一個
+  const OVERPASS_ENDPOINTS = [
+    'https://overpass-api.de/api/interpreter',
+    'https://overpass.kumi.systems/api/interpreter',
+    'https://overpass.private.coffee/api/interpreter',
+    'https://overpass.osm.jp/api/interpreter'
+  ];
 
-    const url = 'https://overpass-api.de/api/interpreter';
-    const resp = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: 'data=' + encodeURIComponent(query),
-    });
+  let lastFix = null;      // 最近一次成功的座標,供「再搜一次/擴大範圍」使用
+  let lastRadius = 300;
 
-    if (!resp.ok) throw new Error('API 回應失敗');
-    const data = await resp.json();
-
-    return (data.elements || []).map(el => {
-      const t = el.tags || {};
-      const name = t['name:zh-Hant'] || t['name:zh'] || t.name || '(未命名店家)';
-      const elLat = el.lat || (el.center && el.center.lat);
-      const elLon = el.lon || (el.center && el.center.lon);
-      const dist = (elLat && elLon) ? haversineDistance(lat, lon, elLat, elLon) : null;
-      return { name, dist };
-    }).filter(x => x.name !== '(未命名店家)')
-      .sort((a, b) => (a.dist || 0) - (b.dist || 0));
+  function fetchWithTimeout(url, opts, ms) {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), ms);
+    return fetch(url, Object.assign({}, opts, { signal: ctl.signal }))
+      .finally(() => clearTimeout(timer));
   }
 
-  function getPosition() {
-    return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) {
-        reject(new Error('這個瀏覽器不支援定位功能'));
-        return;
+  async function fetchNearbyRestaurants(lat, lon, radius) {
+    // 注意:out 的順序必須是 [verbosity] [geometry] [limit];
+    // 舊版寫成 out center tags 30 → tags 模式不會輸出座標,距離會全部算不出來
+    const query =
+      '[out:json][timeout:25];' +
+      'nwr["amenity"~"^(restaurant|fast_food|cafe|food_court|bar|pub|ice_cream)$"]' +
+      '(around:' + radius + ',' + lat + ',' + lon + ');' +
+      'out body center 60;';
+
+    let lastErr = null;
+    for (const url of OVERPASS_ENDPOINTS) {
+      try {
+        const resp = await fetchWithTimeout(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'data=' + encodeURIComponent(query),
+        }, 15000);
+
+        if (!resp.ok) { lastErr = new Error('伺服器回應 ' + resp.status + ' (' + hostOf(url) + ')'); continue; }
+
+        const data = await resp.json();
+        return (data.elements || []).map(el => {
+          const t = el.tags || {};
+          const name = t['name:zh-Hant'] || t['name:zh'] || t.name || t.brand || t.operator || '';
+          const elLat = (el.lat != null) ? el.lat : (el.center && el.center.lat);
+          const elLon = (el.lon != null) ? el.lon : (el.center && el.center.lon);
+          const dist = (elLat != null && elLon != null) ? haversineDistance(lat, lon, elLat, elLon) : null;
+          return { name: name, dist: dist };
+        }).filter(x => x.name)
+          .sort((a, b) => (a.dist == null ? 1e9 : a.dist) - (b.dist == null ? 1e9 : b.dist));
+
+      } catch (e) {
+        lastErr = new Error(e.name === 'AbortError'
+          ? '連線逾時 (' + hostOf(url) + ')'
+          : '連線失敗 (' + hostOf(url) + ')');
       }
-      navigator.geolocation.getCurrentPosition(
-        pos => resolve(pos),
-        err => {
-          let msg = '無法取得位置';
-          if (err.code === 1) msg = '位置權限被拒絕,請到設定 → Safari → 位置 允許';
-          if (err.code === 2) msg = '目前無法取得位置(訊號不佳?)';
-          if (err.code === 3) msg = '定位超時,請再試一次';
-          reject(new Error(msg));
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 300000 }
-      );
+    }
+    throw lastErr || new Error('所有地圖伺服器都連不上');
+  }
+
+  function hostOf(url) { try { return new URL(url).hostname; } catch (e) { return url; } }
+
+  function geoOnce(opts) {
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject, opts);
     });
+  }
+
+  // 兩段式定位:先快速低精度(室內比較容易成功),失敗再試高精度
+  async function getPosition() {
+    if (!navigator.geolocation) throw new Error('這個瀏覽器不支援定位功能|GEO_UNSUPPORTED');
+    if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+      throw new Error('定位需要 HTTPS 網址才能使用|INSECURE');
+    }
+    try {
+      return await geoOnce({ enableHighAccuracy: false, timeout: 8000, maximumAge: 120000 });
+    } catch (e1) {
+      if (e1 && e1.code === 1) throw geoError(e1);   // 權限被拒就不用再試
+      try {
+        return await geoOnce({ enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
+      } catch (e2) {
+        throw geoError(e2);
+      }
+    }
+  }
+
+  function geoError(err) {
+    let msg = '無法取得位置';
+    let code = 'GEO_' + (err && err.code ? err.code : '0');
+    if (err && err.code === 1) msg = '位置權限被拒絕。iPhone 請開:設定 → 隱私權與安全性 → 定位服務 → Safari網站 → 詢問或允許,並在網頁上的「AA」選單 → 網站設定 → 位置 → 允許';
+    if (err && err.code === 2) msg = '取得不到位置(GPS/Wi-Fi 訊號不佳,或開了鎖定模式/VPN)';
+    if (err && err.code === 3) msg = '定位逾時。請走到窗邊或確認定位服務已開啟,再按一次';
+    return new Error(msg + '|' + code);
   }
 
   // Check URL params for location passed from Shortcuts
@@ -1220,11 +1618,13 @@
     return null;
   }
 
-  async function searchNearby(forcedLocation) {
+  async function searchNearby(forcedLocation, radius) {
+    radius = radius || 300;
     btnNearby.classList.add('loading');
     btnNearby.innerHTML = '<span class="pin">◉</span>搜尋中...';
-    nearbyResults.innerHTML = '';
+    nearbyResults.innerHTML = '<div class="nearby-meta">◉ 定位中…(第一次可能要幾秒)</div>';
 
+    let stage = '定位';
     try {
       let lat, lon, source;
       if (forcedLocation) {
@@ -1235,35 +1635,55 @@
         const pos = await getPosition();
         lat = pos.coords.latitude;
         lon = pos.coords.longitude;
-        source = '目前位置';
+        source = '目前位置 ±' + Math.round(pos.coords.accuracy || 0) + 'm';
       }
+      lastFix = { lat: lat, lon: lon, source: source };
+      lastRadius = radius;
 
-      const results = await fetchNearbyRestaurants(lat, lon);
+      stage = '查詢地圖';
+      nearbyResults.innerHTML = '<div class="nearby-meta">◉ ' + escapeHtml(source) + ' · 查詢地圖資料中…</div>';
+      const results = await fetchNearbyRestaurants(lat, lon, radius);
 
-      let html = '<div class="nearby-meta">◉ ' + source + ' · 半徑 200m · 找到 ' + results.length + ' 間</div>';
+      let html = '<div class="nearby-meta">◉ ' + escapeHtml(source) + ' · 半徑 ' + radius + 'm · 找到 ' + results.length + ' 間</div>';
 
       if (results.length === 0) {
-        html += '<div class="nearby-empty">附近沒找到餐廳(可能地圖資料不完整),請手動輸入</div>';
+        html += '<div class="nearby-empty">半徑 ' + radius + 'm 內沒有店家資料(OpenStreetMap 在台灣的資料本來就不齊),可以擴大範圍或手動輸入</div>';
       } else {
         html += '<div class="nearby-grid">';
-        results.slice(0, 5).forEach(r => {
+        results.slice(0, 8).forEach(r => {
           const safeName = JSON.stringify(r.name).replace(/"/g, '&quot;');
           html += '<button class="nearby-btn" onclick="recordLunch(' + safeName + ')">';
           html += '<span>' + escapeHtml(r.name) + '</span>';
-          if (r.dist !== null) html += '<span class="distance">' + formatDistance(r.dist) + '</span>';
+          if (r.dist != null) html += '<span class="distance">' + formatDistance(r.dist) + '</span>';
           html += '</button>';
         });
         html += '</div>';
       }
 
+      if (radius < 1200) {
+        html += '<button class="nearby-more" onclick="expandNearby()">擴大到 ' + Math.min(radius * 2, 1200) + 'm 再找一次</button>';
+      }
+
       nearbyResults.innerHTML = html;
     } catch (err) {
-      nearbyResults.innerHTML = '<div class="nearby-error">⚠ ' + escapeHtml(err.message) + '</div>';
+      const parts = String(err.message || err).split('|');
+      const msg = parts[0];
+      const code = parts[1] || (stage === '定位' ? 'GEO' : 'NET');
+      nearbyResults.innerHTML =
+        '<div class="nearby-error">⚠ ' + escapeHtml(msg) +
+        '<span class="why">卡在:' + stage + ' · 代號 ' + escapeHtml(code) + '</span>' +
+        '<button class="retry" onclick="searchNearby(' + (lastFix ? JSON.stringify(lastFix).replace(/"/g, '&quot;') : 'null') + ')">再試一次</button>' +
+        '</div>';
     } finally {
       btnNearby.classList.remove('loading');
       btnNearby.innerHTML = '<span class="pin">◉</span>搜尋我附近的餐廳';
     }
   }
+  window.searchNearby = searchNearby;
+
+  window.expandNearby = function() {
+    searchNearby(lastFix, Math.min(lastRadius * 2, 1200));
+  };
 
   btnNearby.addEventListener('click', () => searchNearby());
 
@@ -1299,6 +1719,7 @@
   });
 
   function renderAll() {
+    renderPayerSetup();
     renderToday();
     renderShops();
     renderHistory();
@@ -1313,17 +1734,17 @@
   // 啟動時自動從 Sheets 同步（背景執行，不打擾使用者）
   setTimeout(() => syncFromSheets(false), 1500);
 
-  // Auto-search on page load
+  // 開啟時的行為
+  // 重要:iOS Safari / 主畫面 PWA 對「沒有使用者手勢」就呼叫定位常常直接拒絕或不跳權限視窗,
+  // 這是舊版一開啟就自動搜尋卻總是失敗的主因。改成:只有捷徑帶座標進來時才自動搜尋。
   const urlLoc = getLocationFromURL();
   if (urlLoc) {
-    // 來自捷徑：使用捷徑傳入的座標
     setTimeout(() => searchNearby(urlLoc), 300);
     if (window.history.replaceState) {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   } else {
-    // 一般開啟：自動請求定位並搜尋
-    setTimeout(() => searchNearby(), 600);
+    nearbyResults.innerHTML = '<div class="nearby-empty">按上面的按鈕才會定位(iPhone 必須由你按一下才會跳出權限)</div>';
   }
 </script>
 </body>
